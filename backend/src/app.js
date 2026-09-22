@@ -38,10 +38,13 @@ app.use(cors({
         return callback(null, true)
       }
     }
-    // En producción, usa la variable de entorno
-    const allowedOrigin = process.env.FRONTEND_URL || 'http://localhost:5173'
-    if (origin === allowedOrigin) {
-      return callback(null, allowedOrigin)
+    // En producción, usa la variable de entorno (admite varios orígenes separados por coma)
+    const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
+      .split(',')
+      .map((value) => value.trim())
+      .filter(Boolean)
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, origin)
     }
     callback(new Error('Not allowed by CORS'))
   },
